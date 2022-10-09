@@ -16,9 +16,10 @@ agent {
     }
       stage('Build') {
         when {
-          anyOf{
-            branch 'dev';
-            branch 'qa', expression { app_version ==~ /G.R.C./ }
+          branch 'dev';
+          allOf{
+             branch 'qa' 
+             expression { app_version ==~ /G.R.C./ }
           }
           beforeOptions true
         }
