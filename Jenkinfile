@@ -92,16 +92,16 @@ agent {
       steps {
         sh '''
         env
-        if [ env.BRANCH_NAME == 'dev' ]
+        if [ $BRANCH_NAME = 'dev' ]
         then
           echo "Checking the dev application health"
-        elif [ env.BRANCH_NAME == 'qa' ]
+        elif [ $BRANCH_NAME = 'qa' ]
         then
           echo "Checking the qa application health"
-        elif [ env.BRANCH_NAME == 'uat' ]
+        elif [ $BRANCH_NAME = 'uat' ]
         then
           echo "Checking the uat application health"
-        elif [ env.BRANCH_NAME == 'prod' ] 
+        elif [ $BRANCH_NAME = 'prod' ] 
         then
           echo "Checking the prod application health"
         fi
