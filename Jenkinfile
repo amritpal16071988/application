@@ -7,10 +7,20 @@ agent {
     string (name: 'app_version', description: 'Please enter the app_version')
   }  
   stages {  
-    stage('Pre_validation') {
+    stage('Scanning_code') {
+        when {
+          anyOf{
+            branch 'dev';
+            allOf{
+               branch 'qa' 
+               expression { app_version ==~ /G.R.C./ }
+            }
+          }
+          beforeOptions true
+        }      
       steps {
         sh ''' 
-          echo "checking application"
+          echo "Run Sonar Scan"
         '''
       }
     }
@@ -30,7 +40,7 @@ agent {
           echo "building application"
         '''
       }
-    }    
+    }  
     stage('dev_Software_deployment') {
       when {
         branch 'dev'
@@ -42,17 +52,6 @@ agent {
         '''
       }
     }
-    stage('Sanity_check') {
-      when {
-        branch 'dev'
-        beforeOptions true
-      }      
-      steps {
-        sh ''' 
-          ansible --version
-        '''
-      }
-    }    
     stage('qa_Software_deployment') {
       when {
         branch 'qa'
@@ -88,7 +87,26 @@ agent {
           ansible --version
         '''
       }
-    }           
+    }
+    stage('Sanity_check') {   
+      steps {
+        sh '''
+        if [ env.BRANCH_NAME == 'dev']
+        then
+          echo "Checking the dev application health"
+        elif [ env.BRANCH_NAME == 'qa']
+        then
+          echo "Checking the qa application health"
+        elif [ env.BRANCH_NAME == 'uat']
+        then
+          echo "Checking the uat application health"
+        elif[ env.BRANCH_NAME == 'prod'] 
+        then
+          echo "Checking the prod application health"
+        fi
+        '''
+      }
+    }  
   } 
   post {
     always {
