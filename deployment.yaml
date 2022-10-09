@@ -6,7 +6,7 @@
       name: "{{ item }}"
       group: target_group
     with_items:
-      - {{ target_ip }}
+      - "{{ target_ip }}"
 
 - hosts: target_group
   become: true
