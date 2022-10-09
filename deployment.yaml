@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Add a new host to inventory
+    add_host:
+      name: "{{ item }}"
+      group: target_group
+    with_items:
+      - {{ target_ip }}
+
+- hosts: target_group
+  become: true
+  tasks:
+  - name: copy the package to remote machine
+    template:
+      src: index.html
+      dest: /var/www/html/
+      mode: 0755
