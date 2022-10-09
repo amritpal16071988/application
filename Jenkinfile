@@ -1,0 +1,81 @@
+#!groovy
+pipeline {
+agent {
+  label 'ansible'
+}
+  parameters {
+    string (name: 'app_version', description: 'Please enter the app_version')
+    choice (name: 'Environment', choices: ['dev','qa','uat','prod'],description: 'please select the environment')
+  }  
+  stages {  
+    stage('Update_Jenkinsparameters') {
+      steps {
+        script {
+          if (env.Update == "true") {
+		        currentBuild.result = 'ABORTED'
+            error("Aborting Pipeline for updating Parameters ..")
+          }
+        }
+      }
+    }
+    stage('Pre_validation') {
+      steps {
+        sh ''' 
+          echo "checking application"
+        '''
+      }
+    }   
+    stage('dev_Software_deployment') {
+      when {
+        branch 'dev'
+        beforeOptions true
+      }      
+      steps {
+        sh ''' 
+          ansible --version
+        '''
+      }
+    }
+    stage('qa_Software_deployment') {
+      when {
+        environment ignoreCase: true, name: 'Environment', value: 'qa'
+        expression { app_version ==~ /G.R.C./ }
+        beforeOptions true
+      }      
+      steps {
+        sh ''' 
+          ansible --version
+        '''
+      }
+    } 
+    stage('uat_Software_deployment') {
+      when {
+        environment ignoreCase: true, name: 'Environment', value: 'uat'
+        expression { app_version ==~ /G.R.C./ }
+        beforeOptions true
+      }      
+      steps {
+        sh ''' 
+          ansible --version
+        '''
+      }
+    }
+    stage('prod_Software_deployment') {
+      when {
+        environment ignoreCase: true, name: 'Environment', value: 'prod'
+        expression { app_version ==~ /G.R.C./ }
+        beforeOptions true
+      }      
+      steps {
+        sh ''' 
+          ansible --version
+        '''
+      }
+    }           
+  } 
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}
