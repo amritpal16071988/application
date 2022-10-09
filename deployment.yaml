@@ -10,6 +10,7 @@
 
 - hosts: target_group
   become: true
+  user: ec2-user
   tasks:
   - name: copy the package to remote machine
     template:
