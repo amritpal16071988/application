@@ -103,19 +103,20 @@ agent {
     stage('Sanity_check') {   
       steps {
         sh '''
-        env
-        if [ $BRANCH_NAME = 'dev' ]
+        echo "Checking the $BRANCH_NAME application health"
+        TARGET_DNS=$(terraform output -state=/terraform_state_file/$BRANCH_NAME/terraform.tfstate -json ec2_publicdns|tr -d '\"[]')
+        STATUS=$(curl -s http://$TARGET_DNS -I |grep 'HTTP/1.1'|awk '{print $2}')
+        if [ $STATUS -eq 200 ]
         then
-          echo "Checking the dev application health"
-        elif [ $BRANCH_NAME = 'qa' ]
-        then
-          echo "Checking the qa application health"
-        elif [ $BRANCH_NAME = 'uat' ]
-        then
-          echo "Checking the uat application health"
-        elif [ $BRANCH_NAME = 'prod' ] 
-        then
-          echo "Checking the prod application health"
+          if [ "$BRANCH_NAME" = 'dev' ]
+          then
+            echo "INFO" "Application is deployed without verison on dev"
+          else
+            echo "INFO" "Application is deployed with $app_version"
+          fi
+        else
+          echo "ERROR" "Application is failing please rollback"
+          exit 1
         fi
         '''
       }
