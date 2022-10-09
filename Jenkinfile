@@ -16,10 +16,12 @@ agent {
     }
       stage('Build') {
         when {
-          branch 'dev';
-          allOf{
-             branch 'qa' 
-             expression { app_version ==~ /G.R.C./ }
+          anyOf{
+            branch 'dev';
+            allOf{
+               branch 'qa' 
+               expression { app_version ==~ /G.R.C./ }
+            }
           }
           beforeOptions true
         }
@@ -28,7 +30,7 @@ agent {
           echo "building application"
         '''
       }
-    }  
+    }    
     stage('dev_Software_deployment') {
       when {
         branch 'dev'
