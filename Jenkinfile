@@ -5,7 +5,6 @@ agent {
 }
   parameters {
     string (name: 'app_version', description: 'Please enter the app_version')
-    choice (name: 'Environment', choices: ['dev','qa','uat','prod'],description: 'please select the environment')
   }  
   stages {  
     stage('Update_Jenkinsparameters') {
@@ -38,7 +37,7 @@ agent {
     }
     stage('qa_Software_deployment') {
       when {
-        environment ignoreCase: true, name: 'Environment', value: 'qa'
+        branch 'qa'
         expression { app_version ==~ /G.R.C./ }
         beforeOptions true
       }      
@@ -50,7 +49,7 @@ agent {
     } 
     stage('uat_Software_deployment') {
       when {
-        environment ignoreCase: true, name: 'Environment', value: 'uat'
+        branch 'uat'
         expression { app_version ==~ /G.R.C./ }
         beforeOptions true
       }      
@@ -62,7 +61,7 @@ agent {
     }
     stage('prod_Software_deployment') {
       when {
-        environment ignoreCase: true, name: 'Environment', value: 'prod'
+        branch 'prod'
         expression { app_version ==~ /G.R.C./ }
         beforeOptions true
       }      
