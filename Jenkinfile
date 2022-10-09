@@ -108,7 +108,12 @@ agent {
         STATUS=$(curl -s http://$TARGET_DNS -I |grep 'HTTP/1.1'|awk '{print $2}')
         if [ $STATUS -eq 200 ]
         then
-          echo "INFO" "Application is deployed with $app_version"
+          if [ "$BRANCH_NAME" = 'dev' ]
+          then
+            echo "INFO" "Application is deployed without verison on dev"
+          else
+            echo "INFO" "Application is deployed with $app_version"
+          fi
         else
           echo "ERROR" "Application is failing please rollback"
           exit 1
