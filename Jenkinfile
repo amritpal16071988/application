@@ -47,9 +47,12 @@ agent {
         beforeOptions true
       }      
       steps {
-        sh ''' 
-          ansible --version
+        withCredentials([sshUserPrivateKey(credentialsId: 'dev_key', keyFileVariable: 'ssh_key')]) {        
+        sh '''
+          TARGET_IP=$(terraform output -state=/terraform_state_file/$BRANCH_NAME/terraform.tfstate -json instance_address) 
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook deployment.yaml -e target_ip="$TARGET_IP" -e BRANCH_NAME=$BRANCH_NAME -e APP_VERSION=$app_version --private-key=$ssh_key
         '''
+        }
       }
     }
     stage('qa_Software_deployment') {
@@ -59,9 +62,12 @@ agent {
         beforeOptions true
       }      
       steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'qa_key', keyFileVariable: 'ssh_key')]) {        
         sh ''' 
-          ansible --version
+          TARGET_IP=$(terraform output -state=/terraform_state_file/$BRANCH_NAME/terraform.tfstate -json instance_address) 
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook deployment.yaml -e target_ip="$TARGET_IP" -e BRANCH_NAME=$BRANCH_NAME -e APP_VERSION=$app_version --private-key=$ssh_key
         '''
+        }
       }
     } 
     stage('uat_Software_deployment') {
@@ -71,9 +77,12 @@ agent {
         beforeOptions true
       }      
       steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'uat_key', keyFileVariable: 'ssh_key')]) {        
         sh ''' 
-          ansible --version
+          TARGET_IP=$(terraform output -state=/terraform_state_file/$BRANCH_NAME/terraform.tfstate -json instance_address) 
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook deployment.yaml -e target_ip="$TARGET_IP" -e BRANCH_NAME=$BRANCH_NAME -e APP_VERSION=$app_version --private-key=$ssh_key
         '''
+        }
       }
     }
     stage('prod_Software_deployment') {
@@ -83,24 +92,28 @@ agent {
         beforeOptions true
       }      
       steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'prod_key', keyFileVariable: 'ssh_key')]) {        
         sh ''' 
-          ansible --version
+          TARGET_IP=$(terraform output -state=/terraform_state_file/$BRANCH_NAME/terraform.tfstate -json instance_address) 
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook deployment.yaml -e target_ip="$TARGET_IP" -e BRANCH_NAME=$BRANCH_NAME -e APP_VERSION=$app_version --private-key=$ssh_key
         '''
+        }
       }
     }
     stage('Sanity_check') {   
       steps {
         sh '''
-        if [ env.BRANCH_NAME == 'dev' ]
+        env
+        if [ $BRANCH_NAME = 'dev' ]
         then
           echo "Checking the dev application health"
-        elif [ env.BRANCH_NAME == 'qa' ]
+        elif [ $BRANCH_NAME = 'qa' ]
         then
           echo "Checking the qa application health"
-        elif [ env.BRANCH_NAME == 'uat' ]
+        elif [ $BRANCH_NAME = 'uat' ]
         then
           echo "Checking the uat application health"
-        elif [ env.BRANCH_NAME == 'prod' ] 
+        elif [ $BRANCH_NAME = 'prod' ] 
         then
           echo "Checking the prod application health"
         fi

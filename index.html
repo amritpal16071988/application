@@ -1,0 +1,5 @@
+{%if BRANCH_NAME in [ "dev" ] -%}
+this is {{BRANCH_NAME}} application without version
+{%elif BRANCH_NAME in [ "qa", "uat", "prod"]-%}
+this is {{BRANCH_NAME}} application with version {{ APP_VERSION }}
+{%endif-%}
