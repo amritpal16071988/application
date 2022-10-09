@@ -91,16 +91,16 @@ agent {
     stage('Sanity_check') {   
       steps {
         sh '''
-        if [ env.BRANCH_NAME == 'dev']
+        if [ env.BRANCH_NAME == 'dev' ]
         then
           echo "Checking the dev application health"
-        elif [ env.BRANCH_NAME == 'qa']
+        elif [ env.BRANCH_NAME == 'qa' ]
         then
           echo "Checking the qa application health"
-        elif [ env.BRANCH_NAME == 'uat']
+        elif [ env.BRANCH_NAME == 'uat' ]
         then
           echo "Checking the uat application health"
-        elif[ env.BRANCH_NAME == 'prod'] 
+        elif [ env.BRANCH_NAME == 'prod' ] 
         then
           echo "Checking the prod application health"
         fi
