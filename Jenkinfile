@@ -91,6 +91,7 @@ agent {
     stage('Sanity_check') {   
       steps {
         sh '''
+        env
         if [ env.BRANCH_NAME == 'dev' ]
         then
           echo "Checking the dev application health"
