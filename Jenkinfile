@@ -5,6 +5,7 @@ agent {
 }
   parameters {
     string (name: 'app_version', description: 'Please enter the app_version')
+    gitParameter branchFilter: 'origin/(.*)', defaultValue: 'dev', name: 'BRANCH', type: 'PT_BRANCH'
   }  
   stages {  
     stage('Update_Jenkinsparameters') {
